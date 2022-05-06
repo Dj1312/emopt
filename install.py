@@ -205,7 +205,7 @@ def install_slepc(install_dir):
 
     # compile and install
     print_message('Compiling SLEPc...')
-    slepc_folder = "slepc-" + SLEPC_VERSION
+    slepc_folder = "slepc-v" + SLEPC_VERSION
     os.chdir(slepc_folder)
     call(['./configure', '--prefix='+install_dir])
     call(['make', 'all'])
