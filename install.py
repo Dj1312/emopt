@@ -195,7 +195,7 @@ def install_slepc(install_dir):
     print_message('Downloading SLEPc source...')
     slepc_url = "https://gitlab.com/slepc/slepc/-/archive/v" + SLEPC_VERSION + \
                 "/slepc-v" + SLEPC_VERSION + ".tar.gz"
-    slepc_fname = "slepc-" + SLEPC_VERSION + ".tar.gz"
+    slepc_fname = "slepc-v" + SLEPC_VERSION + ".tar.gz"
     r = requests.get(slepc_url, allow_redirects=True)
     with open(slepc_fname, 'wb') as fsave:
         fsave.write(r.content)
