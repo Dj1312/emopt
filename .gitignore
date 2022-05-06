@@ -52,3 +52,10 @@ emopt.egg-info/
 dist/
 docs/build/doctrees
 docs/build/html
+
+
+# Specific
+.DS_Store
+.dev/
+dev/
+.vscode/settings.json
