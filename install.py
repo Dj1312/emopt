@@ -120,7 +120,7 @@ def install_boost(include_dir):
     """
     print_message('Retrieving boost.geometry headers. This may take a few minutes...')
 
-    boost_url = "https://dl.bintray.com/boostorg/release/1.73.0/source/boost_1_73_0_rc1.tar.gz"
+    boost_url = "https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0_rc1.tar.gz"
 
     boost_fname = "boost_" + BOOST_VERSION + ".tar.gz"
     r = requests.get(boost_url, allow_redirects=True)
@@ -170,7 +170,8 @@ def install_petsc(install_dir):
 
     # compile
     print_message('Compiling PETSc...')
-    call(["./configure", "--with-scalar-type=complex", "--with-mpi=1",
+    call(["./configure", "--with-scalar-type=complex",
+          "--with-mpiexec=mpiexec --allow-run-as-root",
           "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",  
           "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack", 
           "--download-mumps", "--download-openblas"])
@@ -192,8 +193,7 @@ def install_slepc(install_dir):
 
     # get the SLEPc source
     print_message('Downloading SLEPc source...')
-    slepc_url = "http://slepc.upv.es/download/distrib/slepc-" + SLEPC_VERSION + \
-                ".tar.gz"
+    slepc_url = "https://gitlab.com/slepc/slepc/-/archive/v3.12.1/slepc-v3.12.1.tar.gz"
     slepc_fname = "slepc-" + SLEPC_VERSION + ".tar.gz"
     r = requests.get(slepc_url, allow_redirects=True)
     with open(slepc_fname, 'wb') as fsave:
