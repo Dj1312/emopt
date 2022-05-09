@@ -40,8 +40,8 @@ emopt_dep_file = ".emopt_deps"
 # Package Parameters
 EIGEN_VERSION = "3.3.7"
 BOOST_VERSION = "1_73_0"
-PETSC_VERSION = "3.12.1"
-SLEPC_VERSION = "3.12.1"
+PETSC_VERSION = "3.11.2"
+SLEPC_VERSION = "3.11.2"
 
 
 class Logger(object):
@@ -174,7 +174,7 @@ def install_petsc(install_dir):
           "--with-mpiexec=mpiexec --allow-run-as-root",
           "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",  
           "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack", 
-          "--download-mumps", "--download-openblas"])
+          "--download-mumps", "--download-openblas", "--with-petsc4py"])
     call(['make', 'all', 'test'])
 
     print_message('Installing PETSc...')
