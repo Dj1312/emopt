@@ -173,14 +173,14 @@ def install_petsc(install_dir):
 
     # To avoid any issue with Docker, if root, add a flag for MPI
     if os.geteuid()==0:
-        print "Install as root.\n"
+        print("Install as root.\n")
         call(["./configure", "--with-scalar-type=complex",
           "--with-mpiexec=mpiexec --allow-run-as-root", "--with-mpi=1",
           "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
           "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack",
         "--download-mumps", "--download-openblas"])
     else:
-        print "Install as user.\n"
+        print("Install as user.\n")
         call(["./configure", "--with-scalar-type=complex", "--with-mpi=1",
             "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
             "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack", 
