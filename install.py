@@ -30,7 +30,11 @@ of what went wrong. In most cases, the issue will be related to not having the
 appropriate prerequisite software packages installed.
 """
 
-import os, sys, shutil, glob, requests
+import os
+import sys
+import shutil
+import requests
+
 from subprocess import call
 from argparse import ArgumentParser
 
@@ -63,9 +67,11 @@ class Logger(object):
     def flush(self):
         pass
 
+
 def print_message(s):
     """Define custom print message which adds color."""
     print(''.join(['\033[92m', s, '\033[0m']))
+
 
 def install_begin(build_dir):
     """Prepare for building dependencies.
@@ -73,11 +79,13 @@ def install_begin(build_dir):
     """
     os.chdir(build_dir)
 
+
 def install_end(start_dir, build_dir):
     """Cleanup post installation, i.e. delete build dir."""
     os.chdir(start_dir)
     if(os.path.exists(build_dir)):
         shutil.rmtree(build_dir)
+
 
 def write_deps_file(home_dir, include_dir, install_dir):
     """Generate the dependency file.
@@ -94,6 +102,7 @@ def write_deps_file(home_dir, include_dir, install_dir):
         fdep.write('PETSC_ARCH=\n')
         fdep.write('SLEPC_DIR=' + install_dir + '\n')
 
+
 def install_eigen(include_dir):
     """Download and install Eigen. It's header-only, so nice and easy."""
     print_message('Downloading Eigen headers...')
@@ -104,12 +113,14 @@ def install_eigen(include_dir):
     call(['git', 'checkout', EIGEN_VERSION])
 
     eigen_dest = include_dir + 'Eigen'
-    if(os.path.exists(eigen_dest)): shutil.rmtree(eigen_dest)
+    if(os.path.exists(eigen_dest)):
+        shutil.rmtree(eigen_dest)
     shutil.copytree('Eigen', eigen_dest)
 
     print_message('Cleaning up...')
     os.chdir('../')
     shutil.rmtree('eigen-git-mirror')
+
 
 def install_boost(include_dir):
     """Download and install boost.geometry.
@@ -128,17 +139,19 @@ def install_boost(include_dir):
         fsave.write(r.content)
 
     # unzip package
-    call(['tar', 'xvzf', boost_fname])
+    call(['tar', 'xzf', boost_fname])
 
     boost_folder = "boost_" + BOOST_VERSION
     os.chdir(boost_folder)
     call(['./bootstrap.sh'])
     call(['./b2', 'headers'])
 
-    boost_dest = include_dir+'boost'
-    boost_libs_dest = include_dir+'libs/'
-    if(os.path.exists(boost_dest)): shutil.rmtree(boost_dest)
-    if(os.path.exists(boost_libs_dest)): shutil.rmtree(boost_libs_dest)
+    boost_dest = include_dir + 'boost'
+    boost_libs_dest = include_dir + 'libs/'
+    if(os.path.exists(boost_dest)):
+        shutil.rmtree(boost_dest)
+    if(os.path.exists(boost_libs_dest)):
+        shutil.rmtree(boost_libs_dest)
     shutil.copytree('./boost', boost_dest)
     shutil.copytree('./libs', boost_libs_dest)
 
@@ -146,12 +159,15 @@ def install_boost(include_dir):
     os.chdir('../')
     shutil.rmtree(boost_folder)
 
+
 def install_petsc(install_dir):
     """Compile and install PETSc."""
     # Clean up environment variables. If these are set the PETSc compilation will
     # fail
-    if('PETSC_DIR'  in os.environ): del os.environ['PETSC_DIR']
-    if('PETSC_ARCH' in os.environ): del os.environ['PETSC_ARCH']
+    if('PETSC_DIR' in os.environ):
+        del os.environ['PETSC_DIR']
+    if('PETSC_ARCH' in os.environ):
+        del os.environ['PETSC_ARCH']
 
     # get PETSc
     print_message('Downloading PETSc...')
@@ -163,7 +179,7 @@ def install_petsc(install_dir):
         fsave.write(r.content)
 
     # unzip package
-    call(['tar', 'xvzf', petsc_fname])
+    call(['tar', 'xzf', petsc_fname])
 
     petsc_folder = "petsc-" + PETSC_VERSION
     os.chdir(petsc_folder)
@@ -172,19 +188,21 @@ def install_petsc(install_dir):
     print_message('Compiling PETSc...')
 
     # To avoid any issue with Docker, if root, add a flag for MPI
-    if os.geteuid()==0:
+    if os.geteuid() == 0:
         print("Install as root.\n")
         call(["./configure", "--with-scalar-type=complex",
-          "--with-mpiexec=mpiexec --allow-run-as-root", "--with-mpi=1",
-          "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
-          "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack",
-        "--download-mumps", "--download-openblas"])
+              "--with-mpiexec=mpiexec --allow-run-as-root", "--with-mpi=1",
+              "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
+              "--with-debugging=0",
+              "--prefix=" + install_dir, "--download-scalapack",
+              "--download-mumps", "--download-openblas"])
     else:
         print("Install as user.\n")
         call(["./configure", "--with-scalar-type=complex", "--with-mpi=1",
-            "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
-            "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack", 
-            "--download-mumps", "--download-openblas"])
+              "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
+              "--with-debugging=0",
+              "--prefix=" + install_dir, "--download-scalapack",
+              "--download-mumps", "--download-openblas"])
 
     call(['make', 'all', 'test'])
 
@@ -197,10 +215,12 @@ def install_petsc(install_dir):
     os.chdir('../')
     shutil.rmtree(petsc_folder)
 
+
 def install_slepc(install_dir):
     """Compile and install SLEPc."""
     # SLEPC_DIR environment var cant be set
-    if('SLEPC_DIR' in os.environ): del os.environ['SLEPC_DIR']
+    if('SLEPC_DIR' in os.environ):
+        del os.environ['SLEPC_DIR']
 
     # get the SLEPc source
     print_message('Downloading SLEPc source...')
@@ -212,13 +232,13 @@ def install_slepc(install_dir):
         fsave.write(r.content)
 
     # unzip package
-    call(['tar', 'xvzf', slepc_fname])
+    call(['tar', 'xzf', slepc_fname])
 
     # compile and install
     print_message('Compiling SLEPc...')
     slepc_folder = "slepc-" + SLEPC_VERSION
     os.chdir(slepc_folder)
-    call(['./configure', '--prefix='+install_dir])
+    call(['./configure', '--prefix=' + install_dir])
     call(['make', 'all'])
     call(['make', 'install'])
     call(['make', 'test'])
@@ -228,20 +248,21 @@ def install_slepc(install_dir):
     shutil.rmtree(slepc_folder)
     os.remove(slepc_fname)
 
+
 def install_deps():
     # setup logging
     sys.stdout = Logger("install.log")
 
     # Do Argument parsing
     parser = ArgumentParser()
-    parser.add_argument("--prefix=", metavar='filepath', type=str, dest='prefix', 
+    parser.add_argument("--prefix=", metavar='filepath', type=str, dest='prefix',
                         help='Set the installation directory for EMopt dependencies')
 
     args = parser.parse_args()
 
     # setup install directory
     home_dir = os.path.expanduser('~')
-    if(args.prefix == None):
+    if(args.prefix is None):
         install_dir = home_dir + '/.emopt/'
     else:
         install_dir = args.prefix
@@ -269,7 +290,6 @@ def install_deps():
     # save file to user's home directory which will tell emopt where to look for the
     # dependencies
 
-
     # install dependencies
     install_begin(build_dir)
     try:
@@ -284,6 +304,7 @@ def install_deps():
         install_end(current_dir, build_dir)
 
     print_message('Finished installing EMOpt dependencies!')
+
 
 if __name__ == '__main__':
     install_deps()
