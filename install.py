@@ -170,12 +170,22 @@ def install_petsc(install_dir):
 
     # compile
     print_message('Compiling PETSc...')
-    call(["./configure", "--with-scalar-type=complex",
+
+    # To avoid any issue with Docker, if root, add a flag for MPI
+    if os.geteuid()==0:
+        print "Install as root.\n"
+        call(["./configure", "--with-scalar-type=complex",
           "--with-mpiexec=mpiexec --allow-run-as-root", "--with-mpi=1",
-          "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",  
-          "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack", 
-        #   "--download-mumps", "--download-openblas", "--with-petsc4py"])
+          "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
+          "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack",
         "--download-mumps", "--download-openblas"])
+    else:
+        print "Install as user.\n"
+        call(["./configure", "--with-scalar-type=complex", "--with-mpi=1",
+            "--COPTFLAGS='-O3'", "--FOPTFLAGS='-O3'", "--CXXOPTFLAGS='-O3'",
+            "--with-debugging=0", "--prefix="+install_dir, "--download-scalapack", 
+            "--download-mumps", "--download-openblas"])
+
     call(['make', 'all', 'test'])
 
     print_message('Installing PETSc...')
@@ -194,9 +204,9 @@ def install_slepc(install_dir):
 
     # get the SLEPc source
     print_message('Downloading SLEPc source...')
-    slepc_url = "https://gitlab.com/slepc/slepc/-/archive/v" + SLEPC_VERSION + \
-                "/slepc-v" + SLEPC_VERSION + ".tar.gz"
-    slepc_fname = "slepc-v" + SLEPC_VERSION + ".tar.gz"
+    slepc_url = "http://slepc.upv.es/download/distrib/slepc-" + SLEPC_VERSION + \
+                ".tar.gz"
+    slepc_fname = "slepc-" + SLEPC_VERSION + ".tar.gz"
     r = requests.get(slepc_url, allow_redirects=True)
     with open(slepc_fname, 'wb') as fsave:
         fsave.write(r.content)
@@ -206,7 +216,7 @@ def install_slepc(install_dir):
 
     # compile and install
     print_message('Compiling SLEPc...')
-    slepc_folder = "slepc-v" + SLEPC_VERSION
+    slepc_folder = "slepc-" + SLEPC_VERSION
     os.chdir(slepc_folder)
     call(['./configure', '--prefix='+install_dir])
     call(['make', 'all'])
